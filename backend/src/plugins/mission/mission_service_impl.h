@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "log.h"
 #include "mission/mission.h"
 #include "mission/mission.grpc.pb.h"
 #include "mission/mission_item.h"
@@ -132,20 +133,31 @@ private:
                                           const dronecore::rpc::mission::SubscribeMissionProgressRequest * /* request */,
                                           grpc::ServerWriter<rpc::mission::MissionProgressResponse> *writer) override
     {
+        LogErr() << "SubscribeMissionProgress called";
+
+        if (writer == nullptr) {
+            LogErr() << "writer is null!";
+        }
+
         std::promise<void> mission_finished_promise;
         auto mission_finished_future = mission_finished_promise.get_future();
 
+        LogErr() << "subscribing to progress...";
         _mission.subscribe_progress([&writer, &mission_finished_promise](int current, int total) {
+            LogErr() << "received progress event with [current: " << current << ", total: " << total << "]";
             dronecore::rpc::mission::MissionProgressResponse rpc_mission_progress_response;
             rpc_mission_progress_response.set_current_item_index(current);
             rpc_mission_progress_response.set_mission_count(total);
+            LogErr() << "writing rpc_mission_progress_response";
             writer->Write(rpc_mission_progress_response);
 
             if (current == total - 1) {
+                LogErr() << "mission finished, stopping stream";
                 mission_finished_promise.set_value();
             }
         });
 
+        LogErr() << "waiting for end of mission///";
         mission_finished_future.wait();
         return grpc::Status::OK;
     }
