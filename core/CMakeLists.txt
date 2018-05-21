@@ -35,6 +35,7 @@ add_library(dronecore ${LIBRARY_TYPE}
     log.cpp
     cli_arg.cpp
     thread_pool.cpp
+    fake_system.cpp
 )
 
 target_link_libraries(dronecore
