@@ -16,3 +16,8 @@ install(FILES
 install(TARGETS dronecore_action
     DESTINATION ${dronecore_install_lib_dir}
 )
+
+list(APPEND UNIT_TEST_SOURCES
+    ${CMAKE_SOURCE_DIR}/plugins/action/action_test.cpp
+)
+set(UNIT_TEST_SOURCES ${UNIT_TEST_SOURCES} PARENT_SCOPE)
