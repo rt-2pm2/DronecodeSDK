@@ -500,6 +500,16 @@ public:
     void get_option_async(const std::string &setting_id, const get_option_callback_t &callback);
 
     /**
+     * @brief Set an option of a setting (synchronous).
+     *
+     * @param setting_id The machine readable name of the setting.
+     * @param option The machine readable name of the option value.
+     *
+     * @return SUCCESS if option is set, error otherwise.
+     */
+    Result set_option(const std::string &setting_id, const Camera::Option &option);
+
+    /**
      * @brief Set an option of a setting (asynchronous).
      *
      * @param setting_id The machine readable name of the setting.

@@ -50,6 +50,7 @@ public:
     void get_status_async(Camera::get_status_callback_t callback);
     void subscribe_status(const Camera::subscribe_status_callback_t callback);
 
+    Camera::Result set_option(const std::string &setting_id, const Camera::Option &option);
     void set_option_async(const std::string &setting_id,
                           const Camera::Option &option,
                           const Camera::result_callback_t &callback);

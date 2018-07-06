@@ -998,6 +998,49 @@ bool CameraImpl::get_possible_options(const std::string &setting_id,
     return options.size() > 0;
 }
 
+Camera::Result CameraImpl::set_option(const std::string &setting_id, const Camera::Option &option);
+{
+    if (!_camera_definition) {
+        LogWarn() << "Error: no camera defnition available yet.";
+        return Camera::Result::ERROR;
+    }
+
+    // We get it first so that we have the type of the param value.
+    MAVLinkParameters::ParamValue value;
+    if (!_camera_definition->get_option_value(setting_id, option.option_id, value)) {
+        return Camera::Result::ERROR;
+    }
+
+    std::vector<MAVLinkParameters::ParamValue> possible_values;
+    _camera_definition->get_possible_options(setting_id, possible_values);
+    bool allowed = false;
+    for (const auto &possible_value : possible_values) {
+        if (value == possible_value) {
+            allowed = true;
+        }
+    }
+    if (!allowed) {
+        LogErr() << "Setting " << setting_id << "(" << option.option_id << ") not allowed";
+        return Camera::Result::ERROR;
+    }
+
+    auto is_success = _parent->set_param(setting_id, value, true);
+
+    if (is_success) {
+        if (this->_camera_definition) {
+            _camera_definition->set_setting(setting_id, value);
+            refresh_params();
+        }
+        if (callback) {
+            callback(Camera::Result::SUCCESS);
+        }
+    } else {
+        if (callback) {
+            callback(Camera::Result::ERROR);
+        }
+    }
+}
+
 void CameraImpl::set_option_async(const std::string &setting_id,
                                   const Camera::Option &option,
                                   const Camera::result_callback_t &callback)
