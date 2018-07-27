@@ -3,9 +3,13 @@ build*/
 install/
 logs/
 .vscode
+*cscope*
+*gitignore*
+*swp
 # auto-generated files (below) from Qt Creator
 *.config
 *.creator*
 *.files
 *.includes
 CMakeLists.txt.user*
+
